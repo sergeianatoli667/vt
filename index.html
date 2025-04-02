@@ -8,38 +8,32 @@
     <style>
         body {
             font-family: 'Nunito Sans', sans-serif;
+            background-color: rgb(35, 31, 32);
+            color: #fff;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
-            background-color: rgb(35, 31, 32);
-            color: #fff;
-            position: relative;
-        }
-        .background-image {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            width: 100px;
-            height: auto;
+            margin: 0;
+            padding: 20px;
         }
         .container {
             background: #222;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            max-width: 500px;
+            width: 100%;
             text-align: center;
-            max-width: 500px; /* Limit max width for better readability */
-            width: 100%; /* Ensure it takes full width on smaller screens */
         }
         input, button {
-            margin: 10px 0; /* Add margin to make sure inputs are spaced out */
+            margin: 10px 0;
             padding: 10px;
             border-radius: 5px;
             border: none;
-            width: 100%; /* Make inputs full-width */
-            box-sizing: border-box; /* Ensure padding doesn't overflow */
+            width: 100%;
+            box-sizing: border-box;
         }
         input {
             background: #333;
@@ -73,13 +67,12 @@
             right: 10px;
         }
 
-        /* Add responsiveness to the layout */
-        @media screen and (max-width: 600px) {
+        @media (max-width: 600px) {
             body {
-                font-size: 14px; /* Adjust font size for small devices */
+                font-size: 14px;
             }
             .container {
-                padding: 15px; /* Reduce padding on smaller screens */
+                padding: 15px;
             }
         }
     </style>
@@ -90,19 +83,19 @@
 
     <div class="container">
         <h2>Vanuse Kalkulaator</h2>
-        
-        <label>Sünniaeg:</label>
-        <input type="text" id="birthdate" placeholder="Kuu Päev Aasta" oninput="autoFormatDate('birthdate')" onblur="formatDate('birthdate')">
-        
-        <label>Viimane:</label>
-        <input type="text" id="viimane" placeholder="Kuu Päev Aasta" oninput="autoFormatDate('viimane')" onblur="formatDate('viimane')">
-        
-        <label>Esimene:</label>
-        <input type="text" id="esimene" placeholder="Kuu Päev Aasta" oninput="autoFormatDate('esimene')" onblur="formatDate('esimene')">
-        
-        <label>TEV:</label>
-        <input type="text" id="tev" placeholder="Kuu Päev Aasta" oninput="autoFormatDate('tev')" onblur="formatDate('tev')">
-        
+
+        <label for="birthdate">Sünniaeg:</label>
+        <input type="text" id="birthdate" placeholder="Kuu Päev Aasta" oninput="autoFormatDate('birthdate')" onblur="formatDate('birthdate')" aria-label="Sisesta sünniaeg">
+
+        <label for="viimane">Viimane:</label>
+        <input type="text" id="viimane" placeholder="Kuu Päev Aasta" oninput="autoFormatDate('viimane')" onblur="formatDate('viimane')" aria-label="Sisesta viimane kuupäev">
+
+        <label for="esimene">Esimene:</label>
+        <input type="text" id="esimene" placeholder="Kuu Päev Aasta" oninput="autoFormatDate('esimene')" onblur="formatDate('esimene')" aria-label="Sisesta esimene kuupäev">
+
+        <label for="tev">TEV:</label>
+        <input type="text" id="tev" placeholder="Kuu Päev Aasta" oninput="autoFormatDate('tev')" onblur="formatDate('tev')" aria-label="Sisesta TEV kuupäev">
+
         <button onclick="calculateAge()">Arvuta</button>
         <div class="result" id="result"></div>
     </div>
@@ -120,7 +113,6 @@
             }
         }
 
-        // Automatically format the date as the user types
         function autoFormatDate(inputId) {
             let input = document.getElementById(inputId);
             let value = input.value.replace(/[^\d]/g, '');  // Remove all non-digit characters
