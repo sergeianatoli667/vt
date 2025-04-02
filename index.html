@@ -13,7 +13,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             height: 100vh;
             margin: 0;
             padding: 20px;
@@ -23,7 +23,7 @@
             position: absolute;
             top: 10px;
             left: 10px;
-            width: 80px; /* Made the logo slightly smaller */
+            width: 80px; /* Kept the smaller size */
             height: auto;
         }
         .container {
@@ -34,6 +34,7 @@
             max-width: 500px;
             width: 100%;
             text-align: center;
+            margin-top: 80px; /* Pushed content down so logo doesn't overlap */
         }
         input, button {
             margin: 10px 0;
@@ -49,6 +50,7 @@
             color: white;
             text-align: center;
             outline: none;
+            min-height: 40px; /* Ensures input height doesn’t shrink */
         }
         button {
             background: #28a745;
@@ -62,6 +64,7 @@
         .result {
             margin-top: 10px;
             font-size: 1.2em;
+            min-height: 50px; /* Prevents shifting when results appear */
         }
         .popup-image {
             position: absolute;
@@ -154,9 +157,9 @@
 
             let resultText = "";
 
-            resultText += calculateAgeForDate(birthdate, viimane, "Viimane karistus");
-            resultText += calculateAgeForDate(birthdate, tev, "Tingimisi vabaks");
-            resultText += calculateAgeForDate(birthdate, esimene, "Esimene rikkumine");
+            resultText += calculateAgeForDate(birthdate, viimane, "Viimane vanus");
+            resultText += calculateAgeForDate(birthdate, tev, "Tingimisi vanus");
+            resultText += calculateAgeForDate(birthdate, esimene, "Esimene vanus");
 
             document.getElementById("result").innerHTML = resultText;
             showPopupImage();
