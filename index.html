@@ -17,6 +17,14 @@
             height: 100vh;
             margin: 0;
             padding: 20px;
+            position: relative;
+        }
+        .logo {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 100px;
+            height: auto;
         }
         .container {
             background: #222;
@@ -70,22 +78,22 @@
 </head>
 <body>
 
-    <img class="background-image" src="corner-image.jpg" alt="Corner Image">
+    <img class="logo" src="corner-image.jpg" alt="Logo">
 
     <div class="container">
         <h2>Vanuse Kalkulaator</h2>
 
         <label for="birthdate">Sünniaeg (Aasta Kuu Päev):</label>
-        <input type="text" id="birthdate" placeholder="AAAA KK PP" oninput="autoFormatDate('birthdate')" onblur="formatDate('birthdate')" inputmode="numeric">
+        <input type="text" id="birthdate" placeholder="AAAA KK PP" oninput="autoFormatDate(this)" onkeydown="handleBackspace(event, this)" onblur="formatDate(this)" inputmode="numeric">
 
         <label for="viimane">Viimane (Aasta Kuu Päev):</label>
-        <input type="text" id="viimane" placeholder="AAAA KK PP" oninput="autoFormatDate('viimane')" onblur="formatDate('viimane')" inputmode="numeric">
+        <input type="text" id="viimane" placeholder="AAAA KK PP" oninput="autoFormatDate(this)" onkeydown="handleBackspace(event, this)" onblur="formatDate(this)" inputmode="numeric">
 
         <label for="tev">TEV (Aasta Kuu Päev):</label>
-        <input type="text" id="tev" placeholder="AAAA KK PP" oninput="autoFormatDate('tev')" onblur="formatDate('tev')" inputmode="numeric">
+        <input type="text" id="tev" placeholder="AAAA KK PP" oninput="autoFormatDate(this)" onkeydown="handleBackspace(event, this)" onblur="formatDate(this)" inputmode="numeric">
 
         <label for="esimene">Esimene (Aasta Kuu Päev):</label>
-        <input type="text" id="esimene" placeholder="AAAA KK PP" oninput="autoFormatDate('esimene')" onblur="formatDate('esimene')" inputmode="numeric">
+        <input type="text" id="esimene" placeholder="AAAA KK PP" oninput="autoFormatDate(this)" onkeydown="handleBackspace(event, this)" onblur="formatDate(this)" inputmode="numeric">
 
         <button onclick="calculateAge()">Arvuta</button>
         <div class="result" id="result"></div>
@@ -96,8 +104,7 @@
     <script>
         let toggle = true;
 
-        function autoFormatDate(inputId) {
-            let input = document.getElementById(inputId);
+        function autoFormatDate(input) {
             let value = input.value.replace(/[^\d]/g, ''); // Only allow numbers
 
             if (value.length > 8) value = value.slice(0, 8);
@@ -111,11 +118,23 @@
             }
         }
 
-        function formatDate(inputId) {
-            let input = document.getElementById(inputId);
+        function formatDate(input) {
             let dateParts = input.value.match(/(\d{4})[ .\/-]?(\d{1,2})[ .\/-]?(\d{1,2})/);
             if (dateParts) {
                 input.value = `${dateParts[1]}-${dateParts[2].padStart(2, '0')}-${dateParts[3].padStart(2, '0')}`;
+            }
+        }
+
+        function handleBackspace(event, input) {
+            if (event.key === "Backspace") {
+                let cursorPos = input.selectionStart;
+                let value = input.value;
+
+                if (cursorPos > 0 && value[cursorPos - 1] === " ") {
+                    event.preventDefault();
+                    input.value = value.slice(0, cursorPos - 1) + value.slice(cursorPos);
+                    input.selectionStart = input.selectionEnd = cursorPos - 1;
+                }
             }
         }
 
