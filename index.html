@@ -89,13 +89,13 @@
         <label for="birthdate">Sünniaeg (Aasta Kuu Päev):</label>
         <input type="text" id="birthdate" placeholder="AAAA KK PP" oninput="autoFormatDate(this)" onkeydown="handleBackspace(event, this)" onblur="formatDate(this)" inputmode="numeric" pattern="[0-9 ]*">
 
-        <label for="viimane">Viimane (Aasta Kuu Päev):</label>
+        <label for="viimane">Viimane karistus (Aasta Kuu Päev):</label>
         <input type="text" id="viimane" placeholder="AAAA KK PP" oninput="autoFormatDate(this)" onkeydown="handleBackspace(event, this)" onblur="formatDate(this)" inputmode="numeric" pattern="[0-9 ]*">
 
-        <label for="tev">TEV (Aasta Kuu Päev):</label>
+        <label for="tev">Tingimisi vabaks (Aasta Kuu Päev):</label>
         <input type="text" id="tev" placeholder="AAAA KK PP" oninput="autoFormatDate(this)" onkeydown="handleBackspace(event, this)" onblur="formatDate(this)" inputmode="numeric" pattern="[0-9 ]*">
 
-        <label for="esimene">Esimene (Aasta Kuu Päev):</label>
+        <label for="esimene">Esimene rikkumine (Aasta Kuu Päev):</label>
         <input type="text" id="esimene" placeholder="AAAA KK PP" oninput="autoFormatDate(this)" onkeydown="handleBackspace(event, this)" onblur="formatDate(this)" inputmode="numeric" pattern="[0-9 ]*">
 
         <button onclick="calculateAge()">Arvuta</button>
@@ -154,9 +154,9 @@
 
             let resultText = "";
 
-            resultText += calculateAgeForDate(birthdate, viimane, "Viimane");
-            resultText += calculateAgeForDate(birthdate, tev, "TEV");
-            resultText += calculateAgeForDate(birthdate, esimene, "Esimene");
+            resultText += calculateAgeForDate(birthdate, viimane, "Viimane karistus");
+            resultText += calculateAgeForDate(birthdate, tev, "Tingimisi vabaks");
+            resultText += calculateAgeForDate(birthdate, esimene, "Esimene rikkumine");
 
             document.getElementById("result").innerHTML = resultText;
             showPopupImage();
