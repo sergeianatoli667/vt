@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vanuse Kalkulaator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito Sans', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: rgb(35, 31, 32);
+            color: #fff;
+            position: relative;
+        }
+        .background-image {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 100px;
+            height: auto;
+        }
+        .container {
+            background: #222;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+        input, button {
+            margin: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+        }
+        input {
+            background: #333;
+            color: white;
+        }
+        button {
+            background: #28a745;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #218838;
+        }
+        .result {
+            margin-top: 10px;
+            font-size: 1.2em;
+        }
+        .date-preview {
+            font-size: 1em;
+            margin-top: 5px;
+            color: #bbb;
+        }
+        .popup-image {
+            position: absolute;
+            width: 10%;
+            height: auto;
+            display: none;
+        }
+        .bottom-left {
+            bottom: 10px;
+            left: 10px;
+        }
+        .bottom-right {
+            bottom: 10px;
+            right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <img class="background-image" src="corner-image.jpg" alt="Corner Image">
+
+    <div class="container">
+        <h2>Vanuse Kalkulaator</h2>
+        
+        <label>Sünniaeg:</label>
+        <input type="date" id="birthdate" oninput="updateDatePreview('birthdate', 'birthPreview')">
+        <div id="birthPreview" class="date-preview"></div>
+
+        <label>Võrdlus:</label>
+        <input type="date" id="refdate" oninput="updateDatePreview('refdate', 'refPreview')">
+        <div id="refPreview" class="date-preview"></div>
+
+        <button onclick="calculateAge()">Arvuta</button>
+        <div class="result" id="result"></div>
+    </div>
+
+    <img id="popupImage" class="popup-image" alt="Popup Image">
+
+    <script>
+        let toggle = true;
+
+        function updateDatePreview(inputId, previewId) {
+            let input = document.getElementById(inputId);
+            let preview = document.getElementById(previewId);
+            let date = new Date(input.value);
+            
+            if (isNaN(date)) {
+                preview.textContent = "";
+                return;
+            }
+            
+            const months = [
+                "Jaanuar", "Veebruar", "Märts", "Aprill", "Mai", "Juuni", 
+                "Juuli", "August", "September", "Oktoober", "November", "Detsember"
+            ];
+            
+            preview.textContent = `Valitud kuupäev: ${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+        }
+
+        function calculateAge() {
+            let birthdate = new Date(document.getElementById("birthdate").value);
+            let refdate = new Date(document.getElementById("refdate").value);
+
+            if (isNaN(birthdate) || isNaN(refdate)) {
+                document.getElementById("result").textContent = "Palun sisestage mõlemad kuupäevad.";
+                return;
+            }
+
+            let years = refdate.getFullYear() - birthdate.getFullYear();
+            let months = refdate.getMonth() - birthdate.getMonth();
+            let days = refdate.getDate() - birthdate.getDate();
+
+            if (days < 0) {
+                months--;
+                days += new Date(refdate.getFullYear(), refdate.getMonth(), 0).getDate();
+            }
+
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+
+            document.getElementById("result").textContent = 
+                `Vanus: ${years} aastat, ${months} kuud, ${days} päeva`;
+
+            showPopupImage();
+        }
+
+        function showPopupImage() {
+            let popupImage = document.getElementById("popupImage");
+            
+            if (toggle) {
+                popupImage.src = "popup1.jpg";
+                popupImage.className = "popup-image bottom-left";
+            } else {
+                popupImage.src = "popup2.jpg";
+                popupImage.className = "popup-image bottom-right";
+            }
+
+            toggle = !toggle; // Switch for next calculation
+            popupImage.style.display = "block";
+
+            setTimeout(() => {
+                popupImage.style.display = "none";
+            }, 1000);
+        }
+    </script>
+
+</body>
+</html>
