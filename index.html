@@ -1,1 +1,189 @@
 
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vanuse Kalkulaator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito Sans', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: rgb(35, 31, 32);
+            color: #fff;
+            position: relative;
+        }
+        .background-image {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 100px;
+            height: auto;
+        }
+        .container {
+            background: #222;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+        input, button {
+            margin: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+        }
+        input {
+            background: #333;
+            color: white;
+        }
+        button {
+            background: #28a745;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #218838;
+        }
+        .result {
+            margin-top: 10px;
+            font-size: 1.2em;
+        }
+        .popup-image {
+            position: absolute;
+            width: 10%;
+            height: auto;
+            display: none;
+        }
+        .bottom-left {
+            bottom: 10px;
+            left: 10px;
+        }
+        .bottom-right {
+            bottom: 10px;
+            right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <img class="background-image" src="corner-image.jpg" alt="Corner Image">
+
+    <div class="container">
+        <h2>Vanuse Kalkulaator</h2>
+        
+        <label>Sünniaeg:</label>
+        <input type="text" id="birthdate" placeholder="KK PP Aasta" oninput="autoFormatDate('birthdate')" onblur="formatDate('birthdate')">
+
+        <label>Viimane:</label>
+        <input type="text" id="lastDate" placeholder="KK PP Aasta" oninput="autoFormatDate('lastDate')" onblur="formatDate('lastDate')">
+
+        <label>Esimene:</label>
+        <input type="text" id="firstDate" placeholder="KK PP Aasta" oninput="autoFormatDate('firstDate')" onblur="formatDate('firstDate')">
+
+        <label>TEV:</label>
+        <input type="text" id="tevDate" placeholder="KK PP Aasta" oninput="autoFormatDate('tevDate')" onblur="formatDate('tevDate')">
+
+        <button onclick="calculateAge()">Arvuta</button>
+        <div class="result" id="result"></div>
+    </div>
+
+    <img id="popupImage" class="popup-image" alt="Popup Image">
+
+    <script>
+        let toggle = true;
+
+        // Auto-format the date when two digits are entered for KK and PP
+        function autoFormatDate(inputId) {
+            let input = document.getElementById(inputId);
+            let value = input.value.replace(/[^\d]/g, ""); // Remove all non-digit characters
+
+            if (value.length <= 2) {
+                // Format the value as KK
+                input.value = value;
+            } else if (value.length > 2 && value.length <= 4) {
+                // Format the value as KK PP
+                input.value = value.slice(0, 2) + " " + value.slice(2, 4);
+            } else if (value.length > 4 && value.length <= 8) {
+                // Format the value as KK PP Aasta
+                input.value = value.slice(0, 2) + " " + value.slice(2, 4) + " " + value.slice(4, 8);
+            } else {
+                // Limit to 8 digits max
+                input.value = value.slice(0, 8);
+            }
+        }
+
+        function formatDate(inputId) {
+            let input = document.getElementById(inputId);
+            let dateParts = input.value.match(/(\d{2})[ .\/-](\d{2})[ .\/-](\d{4})/);
+            if (dateParts) {
+                input.value = `${dateParts[3]}-${dateParts[1].padStart(2, '0')}-${dateParts[2].padStart(2, '0')}`;
+            }
+        }
+
+        function calculateAge() {
+            let birthdate = new Date(document.getElementById("birthdate").value);
+            let lastDate = new Date(document.getElementById("lastDate").value);
+            let firstDate = new Date(document.getElementById("firstDate").value);
+            let tevDate = new Date(document.getElementById("tevDate").value);
+
+            if (isNaN(birthdate) || isNaN(lastDate) || isNaN(firstDate) || isNaN(tevDate)) {
+                document.getElementById("result").textContent = "Palun sisestage kõik kuupäevad õigesti.";
+                return;
+            }
+
+            // Calculate age for each date
+            let lastAge = calculateAgeForDate(birthdate, lastDate);
+            let firstAge = calculateAgeForDate(birthdate, firstDate);
+            let tevAge = calculateAgeForDate(birthdate, tevDate);
+
+            // Display the results
+            document.getElementById("result").innerHTML = `
+                <p>Vanus Viimane: ${lastAge.years} aastat, ${lastAge.months} kuud, ${lastAge.days} päeva</p>
+                <p>Vanus Esimene: ${firstAge.years} aastat, ${firstAge.months} kuud, ${firstAge.days} päeva</p>
+                <p>Vanus TEV: ${tevAge.years} aastat, ${tevAge.months} kuud, ${tevAge.days} päeva</p>
+            `;
+            showPopupImage();
+        }
+
+        function calculateAgeForDate(birthdate, compareDate) {
+            let years = compareDate.getFullYear() - birthdate.getFullYear();
+            let months = compareDate.getMonth() - birthdate.getMonth();
+            let days = compareDate.getDate() - birthdate.getDate();
+
+            if (days < 0) {
+                months--;
+                days += new Date(compareDate.getFullYear(), compareDate.getMonth(), 0).getDate();
+            }
+
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+
+            return { years, months, days };
+        }
+
+        function showPopupImage() {
+            let popupImage = document.getElementById("popupImage");
+            if (toggle) {
+                popupImage.src = "popup1.jpg";
+                popupImage.className = "popup-image bottom-left";
+            } else {
+                popupImage.src = "popup2.jpg";
+                popupImage.className = "popup-image bottom-right";
+            }
+            toggle = !toggle;
+            popupImage.style.display = "block";
+            setTimeout(() => { popupImage.style.display = "none"; }, 2000);
+        }
+    </script>
+
+</body>
+</html>
