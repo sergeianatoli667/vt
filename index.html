@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="et">
 <head>
@@ -31,12 +30,16 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
             text-align: center;
+            max-width: 500px; /* Limit max width for better readability */
+            width: 100%; /* Ensure it takes full width on smaller screens */
         }
         input, button {
-            margin: 10px;
+            margin: 10px 0; /* Add margin to make sure inputs are spaced out */
             padding: 10px;
             border-radius: 5px;
             border: none;
+            width: 100%; /* Make inputs full-width */
+            box-sizing: border-box; /* Ensure padding doesn't overflow */
         }
         input {
             background: #333;
@@ -69,6 +72,16 @@
             bottom: 10px;
             right: 10px;
         }
+
+        /* Add responsiveness to the layout */
+        @media screen and (max-width: 600px) {
+            body {
+                font-size: 14px; /* Adjust font size for small devices */
+            }
+            .container {
+                padding: 15px; /* Reduce padding on smaller screens */
+            }
+        }
     </style>
 </head>
 <body>
@@ -79,17 +92,17 @@
         <h2>Vanuse Kalkulaator</h2>
         
         <label>Sünniaeg:</label>
-        <input type="text" id="birthdate" placeholder="KK PP Aasta" oninput="autoFormatDate('birthdate')" onblur="formatDate('birthdate')">
-
+        <input type="text" id="birthdate" placeholder="Kuu Päev Aasta" oninput="autoFormatDate('birthdate')" onblur="formatDate('birthdate')">
+        
         <label>Viimane:</label>
-        <input type="text" id="lastDate" placeholder="KK PP Aasta" oninput="autoFormatDate('lastDate')" onblur="formatDate('lastDate')">
-
+        <input type="text" id="viimane" placeholder="Kuu Päev Aasta" oninput="autoFormatDate('viimane')" onblur="formatDate('viimane')">
+        
         <label>Esimene:</label>
-        <input type="text" id="firstDate" placeholder="KK PP Aasta" oninput="autoFormatDate('firstDate')" onblur="formatDate('firstDate')">
-
+        <input type="text" id="esimene" placeholder="Kuu Päev Aasta" oninput="autoFormatDate('esimene')" onblur="formatDate('esimene')">
+        
         <label>TEV:</label>
-        <input type="text" id="tevDate" placeholder="KK PP Aasta" oninput="autoFormatDate('tevDate')" onblur="formatDate('tevDate')">
-
+        <input type="text" id="tev" placeholder="Kuu Päev Aasta" oninput="autoFormatDate('tev')" onblur="formatDate('tev')">
+        
         <button onclick="calculateAge()">Arvuta</button>
         <div class="result" id="result"></div>
     </div>
@@ -99,67 +112,63 @@
     <script>
         let toggle = true;
 
-        // Auto-format the date when two digits are entered for KK and PP
-        function autoFormatDate(inputId) {
-            let input = document.getElementById(inputId);
-            let value = input.value.replace(/[^\d]/g, ""); // Remove all non-digit characters
-
-            if (value.length <= 2) {
-                // Format the value as KK
-                input.value = value;
-            } else if (value.length > 2 && value.length <= 4) {
-                // Format the value as KK PP
-                input.value = value.slice(0, 2) + " " + value.slice(2, 4);
-            } else if (value.length > 4 && value.length <= 8) {
-                // Format the value as KK PP Aasta
-                input.value = value.slice(0, 2) + " " + value.slice(2, 4) + " " + value.slice(4, 8);
-            } else {
-                // Limit to 8 digits max
-                input.value = value.slice(0, 8);
-            }
-        }
-
         function formatDate(inputId) {
             let input = document.getElementById(inputId);
-            let dateParts = input.value.match(/(\d{2})[ .\/-](\d{2})[ .\/-](\d{4})/);
+            let dateParts = input.value.match(/(\d{1,2})[ .\/-](\d{1,2})[ .\/-](\d{4})/);
             if (dateParts) {
                 input.value = `${dateParts[3]}-${dateParts[1].padStart(2, '0')}-${dateParts[2].padStart(2, '0')}`;
             }
         }
 
+        // Automatically format the date as the user types
+        function autoFormatDate(inputId) {
+            let input = document.getElementById(inputId);
+            let value = input.value.replace(/[^\d]/g, '');  // Remove all non-digit characters
+
+            if (value.length >= 2 && value.length < 4) {
+                input.value = value.slice(0, 2) + ' ' + value.slice(2);
+            } else if (value.length >= 4 && value.length < 6) {
+                input.value = value.slice(0, 2) + ' ' + value.slice(2, 4) + ' ' + value.slice(4);
+            } else if (value.length >= 6) {
+                input.value = value.slice(0, 2) + ' ' + value.slice(2, 4) + ' ' + value.slice(4, 8);
+            }
+        }
+
         function calculateAge() {
             let birthdate = new Date(document.getElementById("birthdate").value);
-            let lastDate = new Date(document.getElementById("lastDate").value);
-            let firstDate = new Date(document.getElementById("firstDate").value);
-            let tevDate = new Date(document.getElementById("tevDate").value);
+            let viimane = new Date(document.getElementById("viimane").value);
+            let esimene = new Date(document.getElementById("esimene").value);
+            let tev = new Date(document.getElementById("tev").value);
 
-            if (isNaN(birthdate) || isNaN(lastDate) || isNaN(firstDate) || isNaN(tevDate)) {
-                document.getElementById("result").textContent = "Palun sisestage kõik kuupäevad õigesti.";
+            // Check if birthdate is provided
+            if (isNaN(birthdate)) {
+                document.getElementById("result").textContent = "Palun sisestage sünniaeg.";
                 return;
             }
 
-            // Calculate age for each date
-            let lastAge = calculateAgeForDate(birthdate, lastDate);
-            let firstAge = calculateAgeForDate(birthdate, firstDate);
-            let tevAge = calculateAgeForDate(birthdate, tevDate);
+            // Calculate age for Viimane, Esimene, and TEV
+            let resultText = "";
 
-            // Display the results
-            document.getElementById("result").innerHTML = `
-                <p>Vanus Viimane: ${lastAge.years} aastat, ${lastAge.months} kuud, ${lastAge.days} päeva</p>
-                <p>Vanus Esimene: ${firstAge.years} aastat, ${firstAge.months} kuud, ${firstAge.days} päeva</p>
-                <p>Vanus TEV: ${tevAge.years} aastat, ${tevAge.months} kuud, ${tevAge.days} päeva</p>
-            `;
+            resultText += calculateAgeForDate(birthdate, viimane, "Viimane");
+            resultText += calculateAgeForDate(birthdate, esimene, "Esimene");
+            resultText += calculateAgeForDate(birthdate, tev, "TEV");
+
+            document.getElementById("result").innerHTML = resultText;
             showPopupImage();
         }
 
-        function calculateAgeForDate(birthdate, compareDate) {
-            let years = compareDate.getFullYear() - birthdate.getFullYear();
-            let months = compareDate.getMonth() - birthdate.getMonth();
-            let days = compareDate.getDate() - birthdate.getDate();
+        function calculateAgeForDate(birthdate, comparisonDate, label) {
+            if (isNaN(comparisonDate)) {
+                return `<p>${label}: Kuupäev puudub.</p>`;
+            }
+
+            let years = comparisonDate.getFullYear() - birthdate.getFullYear();
+            let months = comparisonDate.getMonth() - birthdate.getMonth();
+            let days = comparisonDate.getDate() - birthdate.getDate();
 
             if (days < 0) {
                 months--;
-                days += new Date(compareDate.getFullYear(), compareDate.getMonth(), 0).getDate();
+                days += new Date(comparisonDate.getFullYear(), comparisonDate.getMonth(), 0).getDate();
             }
 
             if (months < 0) {
@@ -167,7 +176,7 @@
                 months += 12;
             }
 
-            return { years, months, days };
+            return `<p>${label}: ${years} aastat, ${months} kuud, ${days} päeva</p>`;
         }
 
         function showPopupImage() {
