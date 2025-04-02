@@ -52,101 +52,71 @@
             margin-top: 10px;
             font-size: 1.2em;
         }
-        .popup-image {
-            position: absolute;
-            width: 10%;
-            height: auto;
-            display: none;
-        }
-        .bottom-left {
-            bottom: 10px;
-            left: 10px;
-        }
-        .bottom-right {
-            bottom: 10px;
-            right: 10px;
-        }
-
-        @media (max-width: 600px) {
-            body {
-                font-size: 14px;
-            }
-            .container {
-                padding: 15px;
-            }
-        }
     </style>
 </head>
 <body>
 
-    <img class="background-image" src="corner-image.jpg" alt="Corner Image">
-
     <div class="container">
         <h2>Vanuse Kalkulaator</h2>
 
-        <label for="birthdate">Sünniaeg:</label>
-        <input type="text" id="birthdate" placeholder="Kuu Päev Aasta" oninput="autoFormatDate('birthdate')" onblur="formatDate('birthdate')" aria-label="Sisesta sünniaeg">
+        <label for="birthdate">Sünniaeg (Aasta Kuu Päev):</label>
+        <input type="text" id="birthdate" placeholder="AAAA KK PP" oninput="autoFormatDate('birthdate')" onblur="formatDate('birthdate')" aria-label="Sisesta sünniaeg" inputmode="numeric">
 
-        <label for="viimane">Viimane:</label>
-        <input type="text" id="viimane" placeholder="Kuu Päev Aasta" oninput="autoFormatDate('viimane')" onblur="formatDate('viimane')" aria-label="Sisesta viimane kuupäev">
+        <label for="viimane">Viimane (Aasta Kuu Päev):</label>
+        <input type="text" id="viimane" placeholder="AAAA KK PP" oninput="autoFormatDate('viimane')" onblur="formatDate('viimane')" aria-label="Sisesta viimane kuupäev" inputmode="numeric">
 
-        <label for="tev">TEV:</label>
-        <input type="text" id="tev" placeholder="Kuu Päev Aasta" oninput="autoFormatDate('tev')" onblur="formatDate('tev')" aria-label="Sisesta TEV kuupäev">
+        <label for="tev">TEV (Aasta Kuu Päev):</label>
+        <input type="text" id="tev" placeholder="AAAA KK PP" oninput="autoFormatDate('tev')" onblur="formatDate('tev')" aria-label="Sisesta TEV kuupäev" inputmode="numeric">
 
-        <label for="esimene">Esimene:</label>
-        <input type="text" id="esimene" placeholder="Kuu Päev Aasta" oninput="autoFormatDate('esimene')" onblur="formatDate('esimene')" aria-label="Sisesta esimene kuupäev">
+        <label for="esimene">Esimene (Aasta Kuu Päev):</label>
+        <input type="text" id="esimene" placeholder="AAAA KK PP" oninput="autoFormatDate('esimene')" onblur="formatDate('esimene')" aria-label="Sisesta esimene kuupäev" inputmode="numeric">
 
         <button onclick="calculateAge()">Arvuta</button>
         <div class="result" id="result"></div>
     </div>
 
-    <img id="popupImage" class="popup-image" alt="Popup Image">
-
     <script>
-        let toggle = true;
-
-        function formatDate(inputId) {
+        function autoFormatDate(inputId) {
             let input = document.getElementById(inputId);
-            let dateParts = input.value.match(/(\d{1,2})[ .\/-](\d{1,2})[ .\/-](\d{4})/);
-            if (dateParts) {
-                input.value = `${dateParts[3]}-${dateParts[1].padStart(2, '0')}-${dateParts[2].padStart(2, '0')}`;
+            let value = input.value.replace(/[^\d]/g, ''); // Only allow numbers
+
+            if (value.length > 8) value = value.slice(0, 8);
+
+            if (value.length >= 4 && value.length < 6) {
+                input.value = value.slice(0, 4) + ' ' + value.slice(4);
+            } else if (value.length >= 6) {
+                input.value = value.slice(0, 4) + ' ' + value.slice(4, 6) + ' ' + value.slice(6);
+            } else {
+                input.value = value;
             }
         }
 
-        function autoFormatDate(inputId) {
+        function formatDate(inputId) {
             let input = document.getElementById(inputId);
-            let value = input.value.replace(/[^\d]/g, '');  // Remove all non-digit characters
-
-            if (value.length >= 2 && value.length < 4) {
-                input.value = value.slice(0, 2) + ' ' + value.slice(2);
-            } else if (value.length >= 4 && value.length < 6) {
-                input.value = value.slice(0, 2) + ' ' + value.slice(2, 4) + ' ' + value.slice(4);
-            } else if (value.length >= 6) {
-                input.value = value.slice(0, 2) + ' ' + value.slice(2, 4) + ' ' + value.slice(4, 8);
+            let dateParts = input.value.match(/(\d{4})[ .\/-]?(\d{1,2})[ .\/-]?(\d{1,2})/);
+            if (dateParts) {
+                input.value = `${dateParts[1]}-${dateParts[2].padStart(2, '0')}-${dateParts[3].padStart(2, '0')}`;
             }
         }
 
         function calculateAge() {
             let birthdate = new Date(document.getElementById("birthdate").value);
             let viimane = new Date(document.getElementById("viimane").value);
-            let esimene = new Date(document.getElementById("esimene").value);
             let tev = new Date(document.getElementById("tev").value);
+            let esimene = new Date(document.getElementById("esimene").value);
 
-            // Check if birthdate is provided
             if (isNaN(birthdate)) {
                 document.getElementById("result").textContent = "Palun sisestage sünniaeg.";
                 return;
             }
 
-            // Calculate age for Viimane, Esimene, and TEV
             let resultText = "";
 
             resultText += calculateAgeForDate(birthdate, viimane, "Viimane");
-            resultText += calculateAgeForDate(birthdate, esimene, "Esimene");
             resultText += calculateAgeForDate(birthdate, tev, "TEV");
+            resultText += calculateAgeForDate(birthdate, esimene, "Esimene");
 
             document.getElementById("result").innerHTML = resultText;
-            showPopupImage();
         }
 
         function calculateAgeForDate(birthdate, comparisonDate, label) {
@@ -162,27 +132,12 @@
                 months--;
                 days += new Date(comparisonDate.getFullYear(), comparisonDate.getMonth(), 0).getDate();
             }
-
             if (months < 0) {
                 years--;
                 months += 12;
             }
 
             return `<p>${label}: ${years} aastat, ${months} kuud, ${days} päeva</p>`;
-        }
-
-        function showPopupImage() {
-            let popupImage = document.getElementById("popupImage");
-            if (toggle) {
-                popupImage.src = "popup1.jpg";
-                popupImage.className = "popup-image bottom-left";
-            } else {
-                popupImage.src = "popup2.jpg";
-                popupImage.className = "popup-image bottom-right";
-            }
-            toggle = !toggle;
-            popupImage.style.display = "block";
-            setTimeout(() => { popupImage.style.display = "none"; }, 2000);
         }
     </script>
 
