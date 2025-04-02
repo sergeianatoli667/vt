@@ -54,11 +54,6 @@
             margin-top: 10px;
             font-size: 1.2em;
         }
-        .date-preview {
-            font-size: 1em;
-            margin-top: 5px;
-            color: #bbb;
-        }
         .popup-image {
             position: absolute;
             width: 10%;
@@ -81,15 +76,10 @@
 
     <div class="container">
         <h2>Vanuse Kalkulaator</h2>
-        
         <label>Sünniaeg:</label>
-        <input type="date" id="birthdate" oninput="updateDatePreview('birthdate', 'birthPreview')">
-        <div id="birthPreview" class="date-preview"></div>
-
+        <input type="text" id="birthdate" placeholder="Kuu Päev Aasta" onblur="formatDate('birthdate')">
         <label>Võrdlus:</label>
-        <input type="date" id="refdate" oninput="updateDatePreview('refdate', 'refPreview')">
-        <div id="refPreview" class="date-preview"></div>
-
+        <input type="text" id="refdate" placeholder="Kuu Päev Aasta" onblur="formatDate('refdate')">
         <button onclick="calculateAge()">Arvuta</button>
         <div class="result" id="result"></div>
     </div>
@@ -99,22 +89,12 @@
     <script>
         let toggle = true;
 
-        function updateDatePreview(inputId, previewId) {
+        function formatDate(inputId) {
             let input = document.getElementById(inputId);
-            let preview = document.getElementById(previewId);
-            let date = new Date(input.value);
-            
-            if (isNaN(date)) {
-                preview.textContent = "";
-                return;
+            let dateParts = input.value.match(/(\d{1,2})[ .\/-](\d{1,2})[ .\/-](\d{4})/);
+            if (dateParts) {
+                input.value = `${dateParts[3]}-${dateParts[1].padStart(2, '0')}-${dateParts[2].padStart(2, '0')}`;
             }
-            
-            const months = [
-                "Jaanuar", "Veebruar", "Märts", "Aprill", "Mai", "Juuni", 
-                "Juuli", "August", "September", "Oktoober", "November", "Detsember"
-            ];
-            
-            preview.textContent = `Valitud kuupäev: ${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
         }
 
         function calculateAge() {
@@ -122,7 +102,7 @@
             let refdate = new Date(document.getElementById("refdate").value);
 
             if (isNaN(birthdate) || isNaN(refdate)) {
-                document.getElementById("result").textContent = "Palun sisestage mõlemad kuupäevad.";
+                document.getElementById("result").textContent = "Palun sisestage mõlemad kuupäevad õigesti.";
                 return;
             }
 
@@ -140,15 +120,12 @@
                 months += 12;
             }
 
-            document.getElementById("result").textContent = 
-                `Vanus: ${years} aastat, ${months} kuud, ${days} päeva`;
-
+            document.getElementById("result").textContent = `Vanus: ${years} aastat, ${months} kuud, ${days} päeva`;
             showPopupImage();
         }
 
         function showPopupImage() {
             let popupImage = document.getElementById("popupImage");
-            
             if (toggle) {
                 popupImage.src = "popup1.jpg";
                 popupImage.className = "popup-image bottom-left";
@@ -156,13 +133,9 @@
                 popupImage.src = "popup2.jpg";
                 popupImage.className = "popup-image bottom-right";
             }
-
-            toggle = !toggle; // Switch for next calculation
+            toggle = !toggle;
             popupImage.style.display = "block";
-
-            setTimeout(() => {
-                popupImage.style.display = "none";
-            }, 1000);
+            setTimeout(() => { popupImage.style.display = "none"; }, 2000);
         }
     </script>
 
